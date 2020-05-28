@@ -34,7 +34,7 @@ class FusionEKF {
  private:
   // check whether the tracking toolbox was initialized or not (first measurement)
   bool is_initialized_;
-
+  bool use_radar, use_lidar;
   // previous timestamp
   long long previous_timestamp_;
 
@@ -44,6 +44,9 @@ class FusionEKF {
   Eigen::MatrixXd R_radar_;
   Eigen::MatrixXd H_laser_;
   Eigen::MatrixXd Hj_;
+  int n_x, n_lidar, n_radar;
+  float noise_ax, noise_ay;
+
 };
 
 #endif // FusionEKF_H_
