@@ -61,7 +61,7 @@ class UKF {
   Eigen::MatrixXd Xsig_pred_;
 
   // time when the state is true, in us
-  long long time_us_;
+  long long previous_time_;
 
   // Process noise standard deviation longitudinal acceleration in m/s^2
   double std_a_;
@@ -92,9 +92,30 @@ class UKF {
 
   // Augmented state dimension
   int n_aug_;
-
+  //measurement input data size 
+  int n_lidar; //px, py
+  int n_radar; //rho, phi, rho_dot
+  int num_sig;
   // Sigma point spreading parameter
   double lambda_;
+  double NIS_radar;
+  double NIS_lidar;
+  //std::vector<double> NIS_radar;
+  //std::vector<double> NIS_lidar;
+  //radar transformation is non linear, hence need sigma points
+  Eigen::MatrixXd Zsig_pred_radar_; 
+  Eigen::MatrixXd S_radar_;
+  Eigen::VectorXd z_radar_;
+  //lidar transformation is linear
+  Eigen::MatrixXd S_lidar_;
+  Eigen::MatrixXd H_lidar;
+
+  //process and measurement noise covariance
+  Eigen::MatrixXd Q_;
+  Eigen::MatrixXd R_lidar_;
+  Eigen::MatrixXd R_radar_;
+
+
 };
 
 #endif  // UKF_H

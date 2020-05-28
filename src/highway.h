@@ -4,6 +4,7 @@
 #include "render/render.h"
 #include "sensors/lidar.h"
 #include "tools.h"
+#include <fstream>
 
 class Highway
 {
@@ -26,8 +27,8 @@ public:
 	bool visualize_radar = true;
 	bool visualize_pcd = false;
 	// Predict path in the future using UKF
-	double projectedTime = 0;
-	int projectedSteps = 0;
+	double projectedTime = 2;
+	int projectedSteps = 5;
 	// --------------------------------
 
 	Highway(pcl::visualization::PCLVisualizer::Ptr& viewer)
@@ -105,7 +106,7 @@ public:
 		car3.render(viewer);
 	}
 	
-	void stepHighway(double egoVelocity, long long timestamp, int frame_per_sec, pcl::visualization::PCLVisualizer::Ptr& viewer)
+	void stepHighway(double egoVelocity, long long timestamp, int frame_per_sec, pcl::visualization::PCLVisualizer::Ptr& viewer, std::ofstream& file)
 	{
 
 		if(visualize_pcd)
@@ -140,9 +141,12 @@ public:
     			double v2 = sin(yaw)*v;
 				estimate << traffic[i].ukf.x_[0], traffic[i].ukf.x_[1], v1, v2;
 				tools.estimations.push_back(estimate);
+				// save NIS values
+				file << "NIS_lidar "+std::to_string(i+1)+" : "+std::to_string(traffic[i].ukf.NIS_lidar)+"\n" << "NIS_radar "+std::to_string(i+1)+" : "+std::to_string(traffic[i].ukf.NIS_radar)+"\n";
 	
 			}
 		}
+		viewer->addText("Run time: "+std::to_string(timestamp/1000000.0)+" s", 30, 325, 20, 1, 1, 1, "time");
 		viewer->addText("Accuracy - RMSE:", 30, 300, 20, 1, 1, 1, "rmse");
 		VectorXd rmse = tools.CalculateRMSE(tools.estimations, tools.ground_truth);
 		viewer->addText(" X: "+std::to_string(rmse[0]), 30, 275, 20, 1, 1, 1, "rmse_x");

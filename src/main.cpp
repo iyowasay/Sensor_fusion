@@ -4,6 +4,8 @@
 
 //#include "render/render.h"
 #include "highway.h"
+//#include "ukf.h"
+//#include <fstream>
 
 int main(int argc, char** argv)
 {
@@ -27,17 +29,24 @@ int main(int argc, char** argv)
 
 	double egoVelocity = 25;
 
+	std::ofstream file1;
+	file1.open("example.txt");
 	while (frame_count < (frame_per_sec*sec_interval))
 	{
 		viewer->removeAllPointClouds();
 		viewer->removeAllShapes();
 
 		//stepHighway(egoVelocity,time_us, frame_per_sec, viewer);
-		highway.stepHighway(egoVelocity,time_us, frame_per_sec, viewer);
+		highway.stepHighway(egoVelocity,time_us, frame_per_sec, viewer, file1);
 		viewer->spinOnce(1000/frame_per_sec);
 		frame_count++;
 		time_us = 1000000*frame_count/frame_per_sec;
 		
 	}
+
+	file1.close();
+
+	return 0;
+
 
 }
